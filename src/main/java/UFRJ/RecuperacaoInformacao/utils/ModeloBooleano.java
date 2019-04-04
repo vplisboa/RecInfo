@@ -16,6 +16,9 @@ public class ModeloBooleano
 
 	private Map<String,List<String>> indiceInvertido = new HashMap<>();
 	
+	private int linhas;
+	private int colunas;
+	
 	public List<String> separarFraseEmListaPalavras(String frase)
 	{
 		List<String> stopWords = Stream.of("a","o","e","é","de","do","no","são").collect(Collectors.toList());
@@ -51,28 +54,30 @@ public class ModeloBooleano
 		return uniao;
 	}
 	
-	public List<List<Integer>> montarMatrizDeIncidencia(List<String> frases)
+	public int[][] montarMatrizDeIncidencia(List<String> frases)
 	{
 		List<String> listaPalavras = new ArrayList<>();
-		List<List<Integer>> matrizIncidencia = new ArrayList<>();
-		List<Integer> fraseContemTermo = new ArrayList<>();
 		frases.replaceAll(String::toUpperCase);
 		for (String frase : frases)
 		{
 			listaPalavras.addAll(separarFraseEmListaPalavras(frase));
 		}
 		listaPalavrasFormatadas = listaPalavras.stream().distinct().collect(Collectors.toList());
+		
+		linhas = listaPalavrasFormatadas.size();
+		colunas = frases.size();
+		int[][] matriz = new int[linhas][colunas];
+		
+		System.out.println("Lista de termos");
 		System.out.println(listaPalavrasFormatadas);
-		for (String palavra : listaPalavrasFormatadas)
+		for (int i=0;i<linhas;i++)
 		{
-			fraseContemTermo = new ArrayList<>();
-			for (String frase : frases)
+			for (int j =0; j<colunas;j++)
 			{
-				fraseContemTermo.add(verificarSeTermoExisteNaFrase(palavra, frase));
+				matriz[i][j] = verificarSeTermoExisteNaFrase(listaPalavrasFormatadas.get(i), frases.get(j));
 			}
-			matrizIncidencia.add(fraseContemTermo);
 		}
-		return matrizIncidencia;
+		return matriz;
 	}
 	
 	public Integer verificarSeTermoExisteNaFrase(String termo, String frase)
@@ -87,27 +92,21 @@ public class ModeloBooleano
 		return contagemTermos;
 	}
 	
-	public void transformarLinhaMatrizEmIndiceInvertido(List<List<Integer>> matrizIncidencia)
+	public void transformarLinhaMatrizEmIndiceInvertido(int[][] matrizIncidencia)
 	{
 		List<String> listaPostings = new ArrayList<>();
 		
-		int contagemLinhas = 0;
-		int contagemColunas = 1;
-		
-		for (List<Integer> linha : matrizIncidencia)
+		for (int i=0; i<linhas;i++)
 		{
-			contagemColunas = 1;
 			listaPostings = new ArrayList<>();
-			for (Integer elemento : linha)
+			for (int j=0 ; j<colunas;j++)
 			{
-				if(elemento > 0)
+				if(matrizIncidencia[i][j]> 0)
 				{
-					listaPostings.add(String.valueOf(contagemColunas));
+					listaPostings.add(String.valueOf(j+1));
 				}
-				contagemColunas++;
 			}
-			indiceInvertido.put(listaPalavrasFormatadas.get(contagemLinhas),listaPostings);
-			contagemLinhas++;
+			indiceInvertido.put(listaPalavrasFormatadas.get(i),listaPostings);
 		}
 	}
 	
@@ -127,7 +126,7 @@ public class ModeloBooleano
 			resultado = uniaoEntreListas(indiceInvertido.get(temp), indiceInvertido.get(segundoElemento));
 		}
 		
-		for(int j=3,i =4; i==termosConsulta.size();i+=2, j+=2)
+		for(int j=3,i =4; i<=termosConsulta.size();i+=2, j+=2)
 		{
 			operacao = termosConsulta.get(j);
 			segundoElemento = termosConsulta.get(i);
@@ -135,7 +134,7 @@ public class ModeloBooleano
 			{
 				resultado = intersecaoEntreListas(resultado, indiceInvertido.get(segundoElemento));
 			}else {
-				resultado = uniaoEntreListas(indiceInvertido.get(temp), indiceInvertido.get(segundoElemento));
+				resultado = uniaoEntreListas(resultado, indiceInvertido.get(segundoElemento));
 			}
 		}
 		return resultado;
@@ -144,5 +143,25 @@ public class ModeloBooleano
 	public Map<String, List<String>> getIndiceInvertido()
 	{
 		return indiceInvertido;
+	}
+
+	public int getLinhas()
+	{
+		return linhas;
+	}
+
+	public void setLinhas(int linhas)
+	{
+		this.linhas = linhas;
+	}
+
+	public int getColunas()
+	{
+		return colunas;
+	}
+
+	public void setColunas(int colunas)
+	{
+		this.colunas = colunas;
 	}
 }

@@ -18,8 +18,6 @@ public class App
 	
 	private static final String CONSULTA_UM = "xadrez and peã and caval and torr";
 	private static final String CONSULTA_DOIS = "xadrez or peã or caval or torr";
-	private static final String CONSULTA_TRES = "xadrez or peã and caval or torr";
-	private static final String CONSULTA_QUATRO = "xadrez and peã or caval and torr";
 	
     public static void main( String[] args )
     {
@@ -30,14 +28,24 @@ public class App
        	frases.add(FRASE_QUATRO);
        	frases.add(FRASE_CINCO);
        	
-       	List<List<Integer>> saida = modeloBooleano.montarMatrizDeIncidencia(frases);
+       	int[][] saida = modeloBooleano.montarMatrizDeIncidencia(frases);
        	
        	modeloBooleano.transformarLinhaMatrizEmIndiceInvertido(saida);
        	
        	Map<String,List<String>> indiceInvertido = modeloBooleano.getIndiceInvertido();
        	
-       	saida.forEach(System.out::println);
+       	System.out.println("\n Matriz de Incidencia \n");
+
+       	for(int i=0; i<modeloBooleano.getLinhas();i++)
+       	{
+       		for(int j=0; j<modeloBooleano.getColunas();j++)
+       		{
+       			System.out.print(saida[i][j] + "\t");
+       		}
+       		System.out.println();
+       	}
        	
+       	System.out.println("\n Indice Invertido \n");
        	for (String chave : indiceInvertido.keySet())
 		{
 			System.out.print(chave + " ");
@@ -47,12 +55,8 @@ public class App
 
        	List<String> resultadoConsulta = modeloBooleano.executarConsulta(CONSULTA_UM);
        	List<String> resultadoConsultaDois = modeloBooleano.executarConsulta(CONSULTA_DOIS);
-       	List<String> resultadoConsultaTres = modeloBooleano.executarConsulta(CONSULTA_TRES);
-       	List<String> resultadoConsultaQuatro = modeloBooleano.executarConsulta(CONSULTA_QUATRO);
 
-       	System.out.println(resultadoConsulta);
-       	System.out.println(resultadoConsultaDois);
-       	System.out.println(resultadoConsultaTres);
-       	System.out.println(resultadoConsultaQuatro);
+       	System.out.println("resultado da consulta 1(and) :"+resultadoConsulta);
+       	System.out.println("resultado da consulta 2(or) :"+resultadoConsultaDois);
     }
 }

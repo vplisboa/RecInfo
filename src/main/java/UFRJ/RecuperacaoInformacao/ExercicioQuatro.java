@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import UFRJ.RecuperacaoInformacao.ponderacaoTermos.PonderacaoTFIDF;
 import UFRJ.RecuperacaoInformacao.utils.ModeloBooleano;
 
-public class App 
+public class ExercicioQuatro 
 {
 	private static ModeloBooleano modeloBooleano = new ModeloBooleano(); 
 	
@@ -35,12 +36,41 @@ public class App
        	Map<String,List<String>> indiceInvertido = modeloBooleano.getIndiceInvertido();
        	
        	System.out.println("\n Matriz de Incidencia \n");
-
+       	
+       	double[][] ponderacao = new double[modeloBooleano.getLinhas()][modeloBooleano.getColunas()];
+       	int[] quantidadeVezesTermoAparece = new int[modeloBooleano.getLinhas()];
+       	
+       	for(int i=0; i<modeloBooleano.getLinhas();i++)
+       	{
+       		quantidadeVezesTermoAparece[i] = 0;
+       		for(int j=0; j<modeloBooleano.getColunas();j++)
+       		{
+       			System.out.print(saida[i][j] + "\t");
+       			if(saida[i][j] !=0)
+       			{
+       				quantidadeVezesTermoAparece[i]+= saida[i][j];
+       			}
+       		}
+       		System.out.println();
+       	}
+       	int fij,N,ni = 0;
+       	
+       	System.out.println("\n Ponderacao \n");
+       	
        	for(int i=0; i<modeloBooleano.getLinhas();i++)
        	{
        		for(int j=0; j<modeloBooleano.getColunas();j++)
        		{
-       			System.out.print(saida[i][j] + "\t");
+       			fij = saida[i][j];
+       			N = modeloBooleano.getListaFrases().size();
+       			ni = quantidadeVezesTermoAparece[i];
+       			if(fij != 0)
+       			{
+       				ponderacao[i][j] = PonderacaoTFIDF.calculaPesoParaTermosDocumento(fij, N, ni);
+       			}else {
+       				ponderacao[i][j] = 0;
+       			}
+       			System.out.print(ponderacao[i][j] + "\t");
        		}
        		System.out.println();
        	}
@@ -58,5 +88,6 @@ public class App
 
        	System.out.println("resultado da consulta 1(and) :"+resultadoConsulta);
        	System.out.println("resultado da consulta 2(or) :"+resultadoConsultaDois);
+       	
     }
 }

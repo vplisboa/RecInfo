@@ -12,6 +12,8 @@ public class ModeloBooleano
 {
 	private static final String REGEX_SEPARAR_TOKENS = "[\\s\\.,!?]";
 
+	private List<List<String>> listaFrases = new ArrayList<>();
+	
 	private List<String> listaPalavrasFormatadas = new ArrayList<>();
 
 	private Map<String,List<String>> indiceInvertido = new HashMap<>();
@@ -56,11 +58,14 @@ public class ModeloBooleano
 	
 	public int[][] montarMatrizDeIncidencia(List<String> frases)
 	{
+		List<String> fraseSeparada = new ArrayList<>();
 		List<String> listaPalavras = new ArrayList<>();
 		frases.replaceAll(String::toUpperCase);
 		for (String frase : frases)
 		{
-			listaPalavras.addAll(separarFraseEmListaPalavras(frase));
+			fraseSeparada = separarFraseEmListaPalavras(frase);
+			listaFrases.add(fraseSeparada);
+			listaPalavras.addAll(fraseSeparada);
 		}
 		listaPalavrasFormatadas = listaPalavras.stream().distinct().collect(Collectors.toList());
 		
@@ -68,8 +73,6 @@ public class ModeloBooleano
 		colunas = frases.size();
 		int[][] matriz = new int[linhas][colunas];
 		
-		System.out.println("Lista de termos");
-		System.out.println(listaPalavrasFormatadas);
 		for (int i=0;i<linhas;i++)
 		{
 			for (int j =0; j<colunas;j++)
@@ -163,5 +166,25 @@ public class ModeloBooleano
 	public void setColunas(int colunas)
 	{
 		this.colunas = colunas;
+	}
+
+	public List<String> getListaPalavrasFormatadas()
+	{
+		return listaPalavrasFormatadas;
+	}
+
+	public void setListaPalavrasFormatadas(List<String> listaPalavrasFormatadas)
+	{
+		this.listaPalavrasFormatadas = listaPalavrasFormatadas;
+	}
+
+	public List<List<String>> getListaFrases()
+	{
+		return listaFrases;
+	}
+
+	public void setListaFrases(List<List<String>> listaFrases)
+	{
+		this.listaFrases = listaFrases;
 	}
 }
